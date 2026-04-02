@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Icon Gen">
+<meta name="theme-color" content="#13161d">
+<title>Icon Generator Pro</title>
+
+<!-- PWA Manifest inlined as data URI -->
+<link rel="manifest" href="./manifest.json">
+
+<!-- Apple touch icon inlined -->
+<link rel="apple-touch-icon" href="./icon.svg">
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161d;
+    --surface2: #1a1e27;
+    --surface3: #212633;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.14);
+    --accent: #7c6dfa;
+    --accent2: #fa6d9e;
+    --text: #e8eaf0;
+    --text2: #8892a4;
+    --text3: #4d5566;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    overscroll-behavior: none;
+  }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    display: flex;
+    flex-direction: column;
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+  }
+
+  /* ── Top Bar ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .topbar-title {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .topbar-title .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    flex-shrink: 0;
+  }
+  .topbar-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  /* PWA install button */
+  #installBtn {
+    display: none;
+    padding: 5px 10px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+  }
+  #installBtn.visible { display: block; }
+
+  /* ── Layout ── */
+  .main {
+    display: flex;
+    flex: 1;
+    gap: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* ── Controls Panel ── */
+  .controls {
+    width: 300px;
+    min-width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin: 14px 0 7px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .field { margin-bottom: 9px; }
+  .field-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text2);
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    letter-spacing: 0.02em;
+  }
+  .field-label span {
+    font-family: 'DM Mono', monospace;
+    color: var(--accent);
+    font-size: 10px;
+  }
+
+  /* Range sliders - larger touch targets on mobile */
+  input[type="range"] {
+    width: 100%;
+    height: 4px;
+    -webkit-appearance: none;
+    background: var(--surface3);
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    padding: 10px 0; /* bigger touch area */
+    margin: -10px 0;
+    background-clip: content-box;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px rgba(124,109,250,0.5);
+    cursor: pointer;
+  }
+
+  /* Color inputs */
+  .color-row { display: flex; gap: 8px; }
+  .color-field {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 7px 10px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    min-height: 40px;
+  }
+  .color-field:hover { border-color: var(--border-hover); }
+  .color-swatch {
+    width: 20px; height: 20px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.15);
+    position: relative;
+    overflow: hidden;
+  }
+  .color-swatch input[type="color"] {
+    position: absolute;
+    inset: -4px;
+    opacity: 0;
+    cursor: pointer;
+    width: 140%;
+    height: 140%;
+  }
+  .color-hex {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text2);
+    letter-spacing: 0.04em;
+    flex: 1;
+  }
+
+  /* Toggle */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    min-height: 44px;
+  }
+  .toggle-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text2);
+  }
+  .toggle {
+    width: 36px; height: 20px;
+    background: var(--surface3);
+    border-radius: 10px;
+    position: relative;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .toggle.on { background: var(--accent); }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: white;
+    transition: transform 0.2s;
+  }
+  .toggle.on::after { transform: translateX(16px); }
+
+  /* Text input */
+  input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    outline: none;
+    min-height: 44px;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+
+  /* Shape grid */
+  .shape-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+  }
+  .shape-btn {
+    aspect-ratio: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-direction: column;
+    gap: 3px;
+    padding: 5px 3px;
+  }
+  .shape-btn:active { opacity: 0.7; }
+  .shape-btn.active { border-color: var(--accent); background: rgba(124,109,250,0.12); }
+  .shape-btn svg { width: 22px; height: 22px; }
+  .shape-btn-label {
+    font-size: 8px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text3);
+    letter-spacing: 0.04em;
+    text-align: center;
+  }
+  .shape-btn.active .shape-btn-label { color: var(--accent); }
+
+  /* Pills */
+  .pill-row { display: flex; gap: 5px; flex-wrap: wrap; }
+  .pill {
+    padding: 6px 11px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+    min-height: 34px;
+    display: flex;
+    align-items: center;
+  }
+  .pill:active { opacity: 0.7; }
+  .pill.active { background: rgba(124,109,250,0.15); border-color: var(--accent); color: var(--accent); }
+
+  /* Action buttons */
+  .actions { margin-top: 18px; display: flex; flex-direction: column; gap: 8px; padding-bottom: 10px; }
+  .btn {
+    padding: 14px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 48px;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 4px 16px rgba(124,109,250,0.3);
+  }
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+
+  /* ── Preview Area ── */
+  .preview {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  .preview-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+  .preview-toolbar-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .bg-pill-row { display: flex; gap: 5px; margin-left: auto; flex-wrap: wrap; }
+  .bg-pill {
+    padding: 4px 9px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+    color: var(--text3);
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+  }
+  .bg-pill.active { background: var(--surface2); border-color: var(--border); color: var(--text); }
+
+  .preview-stage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    padding: 30px 20px;
+    transition: background 0.3s;
+    overflow: hidden;
+  }
+  .preview-stage.bg-dark { background: #0d0f14; }
+  .preview-stage.bg-mid { background: #3a3a4a; }
+  .preview-stage.bg-light { background: #e8eaf0; }
+  .preview-stage.bg-white { background: #ffffff; }
+
+  .preview-main svg {
+    filter: drop-shadow(0 16px 48px rgba(0,0,0,0.6));
+    max-width: 100%;
+    height: auto;
+  }
+
+  .size-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+  }
+  .size-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .size-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 0.08em;
+  }
+
+  /* Info bar */
+  .info-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+  .info-item {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text3);
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+  .info-item .val { color: var(--text2); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: calc(24px + var(--safe-bottom));
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 18px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 1000;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Scrollbar */
+  .controls::-webkit-scrollbar { width: 3px; }
+  .controls::-webkit-scrollbar-track { background: transparent; }
+  .controls::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 2px; }
+
+  /* ── Mobile layout (portrait) ── */
+  @media (max-width: 640px) {
+    .main { flex-direction: column; }
+    .controls {
+      width: 100%;
+      min-width: 0;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      max-height: 55vh;
+    }
+    .preview { min-height: 40vh; }
+    .size-row { display: none; }
+    .info-bar { gap: 10px; padding: 6px 12px; }
+    .info-item { font-size: 8px; }
+    .topbar-badge { display: none; }
+  }
+
+  /* ── Tablet landscape ── */
+  @media (min-width: 641px) and (max-width: 900px) {
+    .controls { width: 260px; }
+    .preview-main svg { width: 180px; height: 180px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="topbar">
+  <div class="topbar-title">
+    <div class="dot"></div>
+    Icon Generator Pro
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <button id="installBtn" onclick="installPWA()">⬇ 安裝</button>
+    <div class="topbar-badge">SVG · 24px Grid</div>
+  </div>
+</div>
+
+<div class="main">
+  <!-- Controls -->
+  <div class="controls">
+
+    <div class="section-label">底座 Base</div>
+
+    <div class="field">
+      <div class="toggle-row" onclick="toggleCheck('showCircle')">
+        <span class="toggle-label">外圍底座</span>
+        <div class="toggle on" id="toggle-showCircle"></div>
+      </div>
+    </div>
+    <input type="hidden" id="showCircle" value="1">
+
+    <div class="field">
+      <div class="field-label">底座顏色</div>
+      <div class="color-field" onclick="document.getElementById('circleColor').click()">
+        <div class="color-swatch" id="sw-circleColor" style="background:#8d8eff">
+          <input type="color" id="circleColor" value="#8d8eff">
+        </div>
+        <div class="color-hex" id="hex-circleColor">#8D8EFF</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">圓角 <span id="labCorner">2</span></div>
+      <input type="range" id="cornerRadius" min="0" max="45" step="1" value="2">
+    </div>
+
+    <div class="field">
+      <div class="field-label">描邊寬度 <span id="labStroke">0.0</span></div>
+      <input type="range" id="strokeWidth" min="0" max="2" step="0.1" value="0">
+    </div>
+
+    <div class="field">
+      <div class="field-label">描邊顏色</div>
+      <div class="color-field" onclick="document.getElementById('strokeColor').click()">
+        <div class="color-swatch" id="sw-strokeColor" style="background:#ffffff">
+          <input type="color" id="strokeColor" value="#ffffff">
+        </div>
+        <div class="color-hex" id="hex-strokeColor">#FFFFFF</div>
+      </div>
+    </div>
+
+    <div class="section-label">幾何層 Geo</div>
+
+    <div class="field">
+      <div class="field-label">樣式</div>
+      <div class="pill-row">
+        <div class="pill active" data-val="star" onclick="selectPill('geoStyle',this)">星形</div>
+        <div class="pill" data-val="poly" onclick="selectPill('geoStyle',this)">多邊形</div>
+        <div class="pill" data-val="ring" onclick="selectPill('geoStyle',this)">環形</div>
+        <div class="pill" data-val="none" onclick="selectPill('geoStyle',this)">隱藏</div>
+      </div>
+      <input type="hidden" id="geoStyle" value="star">
+    </div>
+
+    <div class="field">
+      <div class="field-label">漸層起始</div>
+      <div class="color-field" onclick="document.getElementById('gradStart').click()">
+        <div class="color-swatch" id="sw-gradStart" style="background:#D4D486">
+          <input type="color" id="gradStart" value="#D4D486">
+        </div>
+        <div class="color-hex" id="hex-gradStart">#D4D486</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">漸層結束</div>
+      <div class="color-field" onclick="document.getElementById('gradEnd').click()">
+        <div class="color-swatch" id="sw-gradEnd" style="background:#808000">
+          <input type="color" id="gradEnd" value="#808000">
+        </div>
+        <div class="color-hex" id="hex-gradEnd">#808000</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">頂點數 <span id="labPoints">8</span></div>
+      <input type="range" id="points" min="3" max="20" value="8">
+    </div>
+
+    <div class="field">
+      <div class="field-label">內縮比例 <span id="labRatio">0.70</span></div>
+      <input type="range" id="ratio" min="0.2" max="1.0" step="0.05" value="0.7">
+    </div>
+
+    <div class="field">
+      <div class="field-label">旋轉 <span id="labRotation">0</span>°</div>
+      <input type="range" id="geoRotation" min="0" max="360" step="1" value="0">
+    </div>
+
+    <div class="section-label">核心 Core</div>
+
+    <div class="field">
+      <div class="field-label">類型</div>
+      <div class="pill-row">
+        <div class="pill" data-val="icon" onclick="selectPill('coreType',this)">圖案</div>
+        <div class="pill active" data-val="text" onclick="selectPill('coreType',this)">文字</div>
+        <div class="pill" data-val="none" onclick="selectPill('coreType',this)">隱藏</div>
+      </div>
+      <input type="hidden" id="coreType" value="text">
+    </div>
+
+    <!-- Icon shapes -->
+    <div id="iconBox" style="display:none">
+      <div class="field">
+        <div class="shape-grid" id="shapeGrid"></div>
+        <input type="hidden" id="iconShape" value="triangle">
+      </div>
+      <div class="field">
+        <div class="field-label">填充顏色</div>
+        <div class="color-field" onclick="document.getElementById('iconColor').click()">
+          <div class="color-swatch" id="sw-iconColor" style="background:#FFFF00">
+            <input type="color" id="iconColor" value="#FFFF00">
+          </div>
+          <div class="color-hex" id="hex-iconColor">#FFFF00</div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">尺寸 <span id="labIconSize">0.45</span></div>
+        <input type="range" id="iconSize" min="0.2" max="0.9" step="0.01" value="0.45">
+      </div>
+      <div class="field">
+        <div class="field-label">垂直偏移 <span id="labIconY">0.0</span></div>
+        <input type="range" id="iconOffsetY" min="-3" max="3" step="0.1" value="0">
+      </div>
+      <div class="field">
+        <div class="toggle-row" onclick="toggleCheck('iconShadow')">
+          <span class="toggle-label">陰影效果</span>
+          <div class="toggle" id="toggle-iconShadow"></div>
+        </div>
+        <input type="hidden" id="iconShadow" value="0">
+      </div>
+    </div>
+
+    <!-- Text -->
+    <div id="textBox">
+      <div class="field">
+        <div class="field-label">文字內容</div>
+        <input type="text" id="innerText" value="AA" maxlength="2">
+      </div>
+      <div class="field">
+        <div class="field-label">文字顏色</div>
+        <div class="color-field" onclick="document.getElementById('textColor').click()">
+          <div class="color-swatch" id="sw-textColor" style="background:#FFFFFF">
+            <input type="color" id="textColor" value="#FFFFFF">
+          </div>
+          <div class="color-hex" id="hex-textColor">#FFFFFF</div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">字體大小 <span id="labFontSize">10</span></div>
+        <input type="range" id="fontSize" min="4" max="16" step="0.5" value="10">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="copySVG()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        複製 SVG 代碼
+      </button>
+      <button class="btn btn-secondary" onclick="downloadSVG()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        下載 512px SVG
+      </button>
+    </div>
+
+  </div><!-- /controls -->
+
+  <!-- Preview -->
+  <div class="preview">
+    <div class="preview-toolbar">
+      <div class="preview-toolbar-label">預覽</div>
+      <div class="bg-pill-row">
+        <div class="bg-pill active" data-bg="bg-dark" onclick="setBg(this)">暗</div>
+        <div class="bg-pill" data-bg="bg-mid" onclick="setBg(this)">灰</div>
+        <div class="bg-pill" data-bg="bg-light" onclick="setBg(this)">淺</div>
+        <div class="bg-pill" data-bg="bg-white" onclick="setBg(this)">白</div>
+      </div>
+    </div>
+
+    <div class="preview-stage bg-dark" id="stage">
+      <div class="preview-main">
+        <svg id="svgMain" width="220" height="220" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" id="sStart" stop-color="#D4D486"/>
+              <stop offset="100%" id="sEnd" stop-color="#808000"/>
+            </linearGradient>
+            <filter id="fShadow" x="-30%" y="-30%" width="160%" height="160%">
+              <feDropShadow dx="0" dy="0.5" stdDeviation="0.8" flood-color="rgba(0,0,0,0.7)"/>
+            </filter>
+          </defs>
+          <rect id="rBase" x="0.5" y="0.5" width="23" height="23" rx="0.5" ry="0.5" fill="#8d8eff"/>
+          <circle id="cOuter" cx="12" cy="12" r="11.5" fill="#000040" style="display:none"/>
+          <path id="pGeo" d="" fill="url(#g1)"/>
+          <g id="gSlot"></g>
+        </svg>
+      </div>
+
+      <div class="size-row" id="sizeRow"></div>
+    </div>
+
+    <div class="info-bar">
+      <div class="info-item">座標系 <span class="val">24×24</span></div>
+      <div class="info-item">輸出 <span class="val">512px</span></div>
+      <div class="info-item">格式 <span class="val">SVG</span></div>
+      <div class="info-item">頂點 <span class="val" id="infoPointsVal">–</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── Shape Library ───────────────────────────────────────────────
+const SHAPES = {
+  triangle: { d:"M12,3 L21.5,20.5 H2.5 Z", label:"三角", dx:0, dy:-0.4 },
+  square:   { d:"M4,4H20V20H4Z", label:"方形", dx:0, dy:0 },
+  circle:   { d:"M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Z", label:"圓形", dx:0, dy:0 },
+  star5:    { d:"M12,2 L14.4,9.2H22L16,13.8 18.4,21 12,16.4 5.6,21 8,13.8 2,9.2H9.6Z", label:"五星", dx:0, dy:0 },
+  star6:    { d:"M12,2 L14.196,7.804 20,6 16.196,11 20,16 14.196,14.196 12,20 9.804,14.196 4,16 7.804,11 4,6 9.804,7.804Z", label:"六芒", dx:0, dy:0 },
+  diamond:  { d:"M12,1 L23,12 12,23 1,12Z", label:"菱形", dx:0, dy:0 },
+  heart:    { d:"M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z", label:"愛心", dx:0, dy:0 },
+  bolt:     { d:"M7,2v11h3v9l7-12h-4l4-8H7z", label:"閃電", dx:0, dy:0 },
+  moon:     { d:"M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z", label:"月亮", dx:0, dy:0 },
+  cross:    { d:"M10,2V10H2V14H10V22H14V14H22V10H14V2Z", label:"十字", dx:0, dy:0 },
+  shield:   { d:"M12,2L3,7v5c0,5.55 3.84,10.74 9,12 5.16-1.26 9-6.45 9-12V7L12,2Z", label:"盾牌", dx:0, dy:0 },
+  crown:    { d:"M2 19h20l-2-8-4 4-4-8-4 8-4-4-2 8Z", label:"皇冠", dx:0, dy:0 },
+};
+
+// ─── State (matches user's SVG) ───────────────────────────────────
+const state = {
+  showCircle: true,
+  circleColor: '#8d8eff',
+  cornerRadius: 2,
+  strokeWidth: 0,
+  strokeColor: '#ffffff',
+  gradStart: '#D4D486',
+  gradEnd: '#808000',
+  geoStyle: 'star',
+  points: 8,
+  ratio: 0.7,
+  geoRotation: 0,
+  coreType: 'text',
+  iconShape: 'triangle',
+  iconColor: '#FFFF00',
+  iconSize: 0.45,
+  iconOffsetY: 0,
+  iconShadow: false,
+  innerText: 'AA',
+  textColor: '#FFFFFF',
+  fontSize: 10,
+};
+
+// ─── Build shape grid ─────────────────────────────────────────────
+function buildShapeGrid() {
+  const grid = document.getElementById('shapeGrid');
+  Object.entries(SHAPES).forEach(([key, shape]) => {
+    const btn = document.createElement('div');
+    btn.className = 'shape-btn' + (key === state.iconShape ? ' active' : '');
+    btn.setAttribute('data-shape', key);
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="${state.iconColor}" xmlns="http://www.w3.org/2000/svg"><path d="${shape.d}"/></svg><div class="shape-btn-label">${shape.label}</div>`;
+    btn.onclick = () => {
+      document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.iconShape = key;
+      render();
+    };
+    grid.appendChild(btn);
+  });
+}
+
+// ─── Color inputs ─────────────────────────────────────────────────
+function initColor(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('input', () => {
+    state[id] = el.value;
+    document.getElementById('sw-' + id).style.background = el.value;
+    document.getElementById('hex-' + id).textContent = el.value.toUpperCase();
+    render();
+  });
+}
+['circleColor','strokeColor','gradStart','gradEnd','iconColor','textColor'].forEach(initColor);
+
+// ─── Toggle ──────────────────────────────────────────────────────
+function toggleCheck(id) {
+  const hidden = document.getElementById(id);
+  const tog = document.getElementById('toggle-' + id);
+  const on = hidden.value !== '1';
+  hidden.value = on ? '1' : '0';
+  tog.classList.toggle('on', on);
+  if (id === 'showCircle') state.showCircle = on;
+  if (id === 'iconShadow') state.iconShadow = on;
+  render();
+}
+
+// ─── Pill selector ────────────────────────────────────────────────
+function selectPill(key, el) {
+  el.parentNode.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  state[key] = el.getAttribute('data-val');
+  if (key === 'coreType') {
+    document.getElementById('iconBox').style.display = state.coreType === 'icon' ? 'block' : 'none';
+    document.getElementById('textBox').style.display = state.coreType === 'text' ? 'block' : 'none';
+  }
+  render();
+}
+
+// ─── Range inputs ─────────────────────────────────────────────────
+function bindRange(id, key, labId, fmt) {
+  const el = document.getElementById(id);
+  const lab = document.getElementById(labId);
+  el.addEventListener('input', () => {
+    const v = parseFloat(el.value);
+    state[key] = v;
+    lab.textContent = fmt ? fmt(v) : v;
+    render();
+  });
+}
+bindRange('cornerRadius','cornerRadius','labCorner');
+bindRange('strokeWidth','strokeWidth','labStroke', v => v.toFixed(1));
+bindRange('points','points','labPoints');
+bindRange('ratio','ratio','labRatio', v => v.toFixed(2));
+bindRange('geoRotation','geoRotation','labRotation');
+bindRange('iconSize','iconSize','labIconSize', v => v.toFixed(2));
+bindRange('iconOffsetY','iconOffsetY','labIconY', v => v.toFixed(1));
+bindRange('fontSize','fontSize','labFontSize');
+
+document.getElementById('innerText').addEventListener('input', e => { state.innerText = e.target.value; render(); });
+
+// ─── Background toggle ────────────────────────────────────────────
+function setBg(el) {
+  document.querySelectorAll('.bg-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('stage').className = 'preview-stage ' + el.getAttribute('data-bg');
+}
+
+// ─── Geo path ────────────────────────────────────────────────────
+function buildGeoPath(pts, rat, rot, style) {
+  const cx=12, cy=12, rOut=8.5;
+  if (style === 'none') return '';
+  if (style === 'ring') {
+    const rIn = rOut * rat;
+    return `M ${cx+rOut},${cy} A ${rOut},${rOut} 0 1 0 ${cx-rOut},${cy} A ${rOut},${rOut} 0 1 0 ${cx+rOut},${cy} Z M ${cx+rIn},${cy} A ${rIn},${rIn} 0 1 1 ${cx-rIn},${cy} A ${rIn},${rIn} 0 1 1 ${cx+rIn},${cy} Z`;
+  }
+  const useStar = style === 'star';
+  const count = useStar ? pts * 2 : pts;
+  let d = '';
+  for (let i = 0; i < count; i++) {
+    const a = (Math.PI*2/count)*i - Math.PI/2 + rot*Math.PI/180;
+    const r = (useStar && i%2===1) ? rOut*rat : rOut;
+    d += (i===0?'M':'L') + (cx+r*Math.cos(a)).toFixed(3) + ',' + (cy+r*Math.sin(a)).toFixed(3);
+  }
+  return d + 'Z';
+}
+
+// ─── Render ──────────────────────────────────────────────────────
+function render() {
+  const ns = 'http://www.w3.org/2000/svg';
+
+  document.getElementById('sStart').setAttribute('stop-color', state.gradStart);
+  document.getElementById('sEnd').setAttribute('stop-color', state.gradEnd);
+
+  const circ = document.getElementById('cOuter');
+  const rect = document.getElementById('rBase');
+  const cr = state.cornerRadius;
+  const useCircle = cr > 43;
+
+  circ.style.display = useCircle && state.showCircle ? 'block' : 'none';
+  rect.style.display = !useCircle && state.showCircle ? 'block' : 'none';
+
+  if (!useCircle) {
+    rect.setAttribute('rx', (cr * 0.25).toFixed(2));
+    rect.setAttribute('ry', (cr * 0.25).toFixed(2));
+  }
+
+  const baseEl = useCircle ? circ : rect;
+  baseEl.setAttribute('fill', state.circleColor);
+  if (state.strokeWidth > 0) {
+    baseEl.setAttribute('stroke', state.strokeColor);
+    baseEl.setAttribute('stroke-width', state.strokeWidth);
+  } else {
+    baseEl.removeAttribute('stroke');
+    baseEl.removeAttribute('stroke-width');
+  }
+
+  const geo = document.getElementById('pGeo');
+  const d = buildGeoPath(state.points, state.ratio, state.geoRotation, state.geoStyle);
+  geo.setAttribute('d', d);
+  geo.style.display = d ? 'block' : 'none';
+
+  document.getElementById('infoPointsVal').textContent =
+    state.geoStyle === 'star' ? state.points*2 : state.points;
+
+  const slot = document.getElementById('gSlot');
+  slot.innerHTML = '';
+
+  if (state.coreType === 'icon') {
+    const sd = SHAPES[state.iconShape];
+    if (sd) {
+      const p = document.createElementNS(ns, 'path');
+      p.setAttribute('d', sd.d);
+      p.setAttribute('fill', state.iconColor);
+      if (state.iconShadow) p.setAttribute('filter', 'url(#fShadow)');
+      const sc = state.iconSize;
+      const xo = 12*(1-sc) + (sd.dx||0);
+      const yo = 12*(1-sc) + (sd.dy||0) + state.iconOffsetY;
+      p.setAttribute('transform', `translate(${xo.toFixed(3)},${yo.toFixed(3)}) scale(${sc})`);
+      slot.appendChild(p);
+    }
+  } else if (state.coreType === 'text') {
+    const t = document.createElementNS(ns, 'text');
+    t.setAttribute('x','12'); t.setAttribute('y','12'); t.setAttribute('dy','0.38em');
+    t.setAttribute('text-anchor','middle'); t.setAttribute('font-weight','900');
+    t.setAttribute('font-size', state.fontSize);
+    t.setAttribute('fill', state.textColor);
+    t.textContent = state.innerText;
+    slot.appendChild(t);
+  }
+
+  document.querySelectorAll('.shape-btn svg path').forEach(p => p.setAttribute('fill', state.iconColor));
+  renderSizePreviews();
+}
+
+// ─── Size previews ────────────────────────────────────────────────
+function renderSizePreviews() {
+  const row = document.getElementById('sizeRow');
+  row.innerHTML = '';
+  [64, 32, 16].forEach(sz => {
+    const clone = document.getElementById('svgMain').cloneNode(true);
+    clone.setAttribute('width', sz); clone.setAttribute('height', sz);
+    clone.removeAttribute('id');
+    clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+    const item = document.createElement('div');
+    item.className = 'size-item';
+    item.innerHTML = `<div class="size-label">${sz}px</div>`;
+    const w = document.createElement('div');
+    w.appendChild(clone);
+    item.insertBefore(w, item.firstChild);
+    row.appendChild(item);
+  });
+}
+
+// ─── Export ──────────────────────────────────────────────────────
+function getExportSVG() {
+  const svg = document.getElementById('svgMain').cloneNode(true);
+  svg.setAttribute('width','512'); svg.setAttribute('height','512');
+  return svg.outerHTML;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function copySVG() {
+  navigator.clipboard.writeText(getExportSVG())
+    .then(() => showToast('✓ SVG 代碼已複製'))
+    .catch(() => {
+      // iOS fallback
+      const ta = document.createElement('textarea');
+      ta.value = getExportSVG();
+      ta.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('✓ SVG 代碼已複製');
+    });
+}
+
+function downloadSVG() {
+  const svgData = getExportSVG();
+  // iOS-safe download via data URI
+  const b64 = btoa(unescape(encodeURIComponent(svgData)));
+  const a = document.createElement('a');
+  a.href = 'data:image/svg+xml;base64,' + b64;
+  a.download = 'icon-512.svg';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  showToast('✓ icon-512.svg 已下載');
+}
+
+// ─── PWA Install ─────────────────────────────────────────────────
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBtn').classList.add('visible');
+});
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBtn').classList.remove('visible');
+  showToast('✓ 已安裝到主畫面');
+});
+function installPWA() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+  }
+}
+
+
+// ─── Service Worker ───────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('SW registered, scope:', reg.scope))
+      .catch(err => console.log('SW skip (normal for local file):', err.message));
+  });
+});
+`;
+  // Encode SW as base64 data URI — registerable on same origin via a hack:
+  // We write the SW into the page's own response using a service-worker-allowed header trick.
+  // For single-file HTML on file:// or GitHub Pages, we use the simplest safe fallback:
+  // register from a data: URI with the correct MIME type.
+  try {
+    const b64 = btoa(unescape(encodeURIComponent(swSrc)));
+    const swDataURI = 'data:text/javascript;base64,' + b64;
+    navigator.serviceWorker.register(swDataURI)
+      .then(() => console.log('SW registered (data URI)'))
+      .catch(() => {
+        // data: URI SW also blocked in some browsers — silently skip,
+        // app still works fully without offline caching.
+        console.log('SW not supported in this context — offline cache disabled.');
+      });
+  } catch(e) {
+    console.log('SW init error:', e);
+  }
+}
+
+// ─── Init ────────────────────────────────────────────────────────
+buildShapeGrid();
+render();
+</script>
+</body>
+</html>

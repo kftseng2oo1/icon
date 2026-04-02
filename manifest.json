@@ -1,0 +1,24 @@
+{
+  "name": "Icon Generator Pro",
+  "short_name": "Icon Gen",
+  "description": "SVG Icon 產生器",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d0f14",
+  "theme_color": "#13161d",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgMjQgMjQiPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnMSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNENEQ0ODYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjODA4MDAwIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB4PSIwLjUiIHk9IjAuNSIgd2lkdGg9IjIzIiBoZWlnaHQ9IjIzIiByeD0iMC41IiByeT0iMC41IiBmaWxsPSIjOGQ4ZWZmIi8+CiAgPHBhdGggZD0iTTEyLjAwMCwzLjUwMEwxNC4yNzcsNi41MDNMMTguMDEwLDUuOTkwTDE3LjQ5Nyw5LjcyM0wyMC41MDAsMTIuMDAwTDE3LjQ5NywxNC4yNzdMMTguMDEwLDE4LjAxMEwxNC4yNzcsMTcuNDk3TDEyLjAwMCwyMC41MDBMOS43MjMsMTcuNDk3TDUuOTkwLDE4LjAxMEw2LjUwMywxNC4yNzdMMy41MDAsMTIuMDAwTDYuNTAzLDkuNzIzTDUuOTkwLDUuOTkwTDkuNzIzLDYuNTAzWiIgZmlsbD0idXJsKCNnMSkiLz4KICA8dGV4dCB4PSIxMiIgeT0iMTIiIGR5PSIwLjM4ZW0iIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iMTAiIGZpbGw9IiNGRkZGRkYiPkFBPC90ZXh0Pgo8L3N2Zz4=",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
