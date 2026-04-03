@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
-<head>
+<html lang="zh-TW"><head><!-- PWA Meta — auto-injected by PWA 打包神器 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Icon Gen">
-<meta name="theme-color" content="#13161d">
+
+
+
+
 <title>Icon Generator Pro</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&amp;family=Syne:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:#0d0f14; --sur:#13161d; --sur2:#1a1e27; --sur3:#212633;
@@ -207,7 +206,14 @@ input[type=text]:focus{border-color:var(--acc)}
   .topbar-badge{display:none}
 }
 </style>
-</head>
+<meta name="application-name" content="ICON-GENERATOR"><meta name="description" content=""><meta name="theme-color" content="#1a73e8"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="ICON"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon.svg"><script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then(r => console.log('[SW] registered:', r.scope))
+        .catch(e => console.warn('[SW] registration failed:', e));
+    });
+  }</script></head>
 <body>
 
 <div class="topbar">
@@ -370,11 +376,11 @@ input[type=text]:focus{border-color:var(--acc)}
 
     <div class="acts">
       <button class="btn btnp" id="btn-copy">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path></svg>
         複製 SVG 代碼
       </button>
       <button class="btn btns" id="btn-dl">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
         下載 512px SVG
       </button>
     </div>
@@ -397,16 +403,16 @@ input[type=text]:focus{border-color:var(--acc)}
       <svg id="svgMain" width="220" height="220" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" id="sStart" stop-color="#D4D486"/>
-            <stop offset="100%" id="sEnd" stop-color="#808000"/>
+            <stop offset="0%" id="sStart" stop-color="#D4D486"></stop>
+            <stop offset="100%" id="sEnd" stop-color="#808000"></stop>
           </linearGradient>
           <filter id="fShadow" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="0.5" stdDeviation="0.8" flood-color="rgba(0,0,0,0.7)"/>
+            <feDropShadow dx="0" dy="0.5" stdDeviation="0.8" flood-color="rgba(0,0,0,0.7)"></feDropShadow>
           </filter>
         </defs>
-        <rect id="elRect" x="0.5" y="0.5" width="23" height="23" rx="0.5" ry="0.5" fill="#8d8eff"/>
-        <circle id="elCirc" cx="12" cy="12" r="11.5" fill="#8d8eff" style="display:none"/>
-        <path id="elGeo" d="" fill="url(#g1)"/>
+        <rect id="elRect" x="0.5" y="0.5" width="23" height="23" rx="0.5" ry="0.5" fill="#8d8eff"></rect>
+        <circle id="elCirc" cx="12" cy="12" r="11.5" fill="#8d8eff" style="display:none"></circle>
+        <path id="elGeo" d="" fill="url(#g1)"></path>
         <g id="elSlot"></g>
       </svg>
 
@@ -788,5 +794,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 }); // end DOMContentLoaded
 </script>
-</body>
-</html>
+
+
+</body></html>
