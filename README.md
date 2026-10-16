@@ -1,44 +1,19 @@
-# ICON-GENERATOR
+# Icon Generator Pro
 
-> 一個 Progressive Web App
+用幾何形狀快速做出 App 圖示，即時預覽各尺寸，匯出 512px SVG。
 
-## 📦 包含檔案
+**線上使用**：https://kftseng2oo1.github.io/icon/
 
-- `icon-192.png`
-- `icon-512.png`
-- `manifest.json`
-- `sw.js`
-- `index.html`
-- `icon.svg`
-- `icon-maskable.svg`
-- `offline.html`
+## 主要功能
+- 12 種形狀：三角、方形、圓形、五星、六芒、菱形、愛心、閃電、月亮、十字、盾牌、皇冠
+- 調整圖形顏色、外圈與描邊顏色、漸層、陰影，可加入文字
+- 同時預覽多種尺寸的實際效果
+- 複製 SVG 代碼，或下載 `icon-512.svg`
 
-## 🚀 部署到 GitHub Pages
+## 技術與依賴
+- 單檔 HTML PWA（`index.html` 內含全部 HTML/CSS/JS），`manifest.json` + `sw.js` 提供安裝到主畫面與離線快取。
+- 純前端 SVG 產生
 
-```bash
-git init
-git add .
-git commit -m "init: ICON-GENERATOR PWA"
-git branch -M main
-git remote add origin https://github.com/<username>/<repo>.git
-git push -u origin main
-```
-
-然後在 GitHub repo → **Settings → Pages** → Source 選 `main` 分支，等待幾分鐘後即可訪問。
-
-## 📱 安裝 PWA
-
-在支援的瀏覽器（Chrome / Edge / Safari iOS）中打開網頁，  
-點擊「**安裝**」或「**加入主畫面**」即可將此 App 安裝到裝置。
-
-## ⚙ 技術規格
-
-| 項目 | 值 |
-|------|-----|
-| display | standalone |
-| theme_color | #1a73e8 |
-| lang | zh-TW |
-| scope | /icon/ |
-
----
-*由 [PWA 打包神器](https://github.com) 自動生成*
+## 相關 repo
+- [icon-ai](https://github.com/kftseng2oo1/icon-ai)：用 AI 依描述生成圖示
+- [HG](https://github.com/kftseng2oo1/HG)：易經卦象圖示
